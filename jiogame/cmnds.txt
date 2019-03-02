@@ -1,0 +1,73 @@
+Commands
+mysql -u root -p
+
+CREATE DATABASE IF NOT EXISTS jiogame;
+DATABASE > jiogame
+
+CREATE USER 'jiouser'@'localhost' IDENTIFIED BY 'jio_pass';
+GRANT ALL PRIVILEGES ON jiogame.* to 'jiouser'@'localhost';
+
+DROP TABLE scores;
+DROP TABLE users;
+
+CREATE TABLE users( uid INT NOT NULL AUTO_INCREMENT PRIMARY KEY, 
+fname VARCHAR(25), lname VARCHAR(25), email VARCHAR(35) NOT NULL UNIQUE, passwd VARCHAR(35) NOT NULL
+);
+
+CREATE TABLE scores( 
+uid INT NOT NULL,
+gamename VARCHAR(20),
+round INT,
+score INT DEFAULT 0,
+CONSTRAINT pk_uidgameround PRIMARY KEY (uid, gamename, round),
+FOREIGN KEY fk_uid(uid) REFERENCES users(uid)
+);
+
+CREATE TABLE timings(
+gamename VARCHAR(20),
+round INT,
+start DATETIME,
+CONSTRAINT pk_gameround PRIMARY KEY (gamename, round)
+);
+
+
+-- Test --
+INSERT INTO users(fname, lname, email, passwd) VALUES(
+'ben','dover','johnny@gmail',md5('pass@123'));
+
+SELECT email,passwd FROM users WHERE email='ben@dover.com'
+AND passwd = 'dc06698f0e2e75751545455899adccc3';
+
+SELECT * FROM scores
+WHERE gamename='chess'
+ORDER BY score DESC
+LIMIT 1;
+
+DELETE FROM scores;
+INSERT INTO scores VALUES
+(1,'chess',1,200),
+(1,'chess',2,600),
+(1,'chess',3,2000),
+(3,'chess',3,1500),
+(3,'chess',4,1300),
+(4,'chess',4,900);
+
+
+DELETE FROM timings;
+INSERT INTO timings VALUES
+('chess',1,'2018-12-12 16:57:00'),
+('chess',2,'2018-12-12 16:58:00'),
+('chess',3,'2018-12-12 16:59:00'),
+('chess',4,'2018-12-12 17:00:00'),
+('chess',5,'2018-12-13 19:55:00');
+
+
+SELECT start,round FROM timings WHERE
+gamename='chess' AND
+start > (SELECT CONVERT_TZ(now(),@@session.time_zone,'+05:30') AS now)
+ORDER BY start
+LIMIT 1;
+
+-- Timezone --
+Gets current time, India:
+SELECT CONVERT_TZ(now(),@@session.time_zone,'+05:30') AS now;
