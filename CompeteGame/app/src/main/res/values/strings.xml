@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Compete Games</string>
+
+    <string name="default_time">3:44 PM</string>
+    <string name="default_title">Title</string>
+    <string name="default_date">Sat, Dec 09, 2017</string>
+
+
+</resources>
